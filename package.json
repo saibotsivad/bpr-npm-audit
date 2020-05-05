@@ -1,0 +1,21 @@
+{
+  "name": "bpr-npm-audit",
+  "version": "0.0.0",
+  "description": "Bitbucket Pipelines report for \"npm audit\".",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saibotsivad/bpr-npm-audit.git"
+  },
+  "keywords": [
+    "bitbucket",
+    "pipelines",
+    "report"
+  ],
+  "author": "saibotsivad",
+  "license": "VOL",
+  "bugs": {
+    "url": "https://github.com/saibotsivad/bpr-npm-audit/issues"
+  },
+  "homepage": "https://github.com/saibotsivad/bpr-npm-audit#readme"
+}
