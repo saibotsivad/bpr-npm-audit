@@ -89,13 +89,13 @@ const url = [
 	'/commit/',
 	bitbucket.commit,
 	'/reports/',
-	reportName
+	reportId
 ].join('')
 
 const response = spawnSync('curl', [
 	'--proxy', proxyUrl,
 	'--request', 'PUT',
-	url,
+	`"${url}"`,
 	'--header', 'Content-Type: application/json',
 	'--data-raw', `'${JSON.stringify(report)}'`
 ])
