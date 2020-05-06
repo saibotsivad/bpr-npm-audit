@@ -2,7 +2,7 @@
   "name": "bpr-npm-audit",
   "version": "0.0.0",
   "description": "Bitbucket Pipelines report for \"npm audit\".",
-  "main": "index.js",
+  "bin": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/saibotsivad/bpr-npm-audit.git"
