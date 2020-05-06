@@ -97,3 +97,11 @@ const response = spawnSync('curl', [
 	'--header', 'Content-Type: application/json',
 	'--data-raw', `'${JSON.stringify(report)}'`
 ])
+
+if (response.stderr.toString()) {
+	console.error('Could not push report to Bitbucket.', url, response.stderr.toString())
+	process.exit(1)
+} else {
+	console.log('Report pushed to Bitbucket.')
+	process.exit(0)
+}
