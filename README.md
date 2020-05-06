@@ -12,6 +12,10 @@ pipelines:
           - npx bpr-npm-audit
 ```
 
+Have a look at this [example pull request](https://bitbucket.org/saibotsivad/test-bpr-npm-audit/pull-requests/1/fix-maybe-setting-the-proxy-is-better), which generates a report like this:
+
+![Example report image](./example-report.png)
+
 ## security
 
 This module has zero dependencies (outside of NodeJS), and is simple enough to audit yourself.
@@ -23,7 +27,7 @@ pipelines:
   my-pipeline:
     - step:
         script:
-          - npx @username/bpr-npm-audit
+          - npx username/bpr-npm-audit
 ```
 
 (Where `username` is your Github username.)
