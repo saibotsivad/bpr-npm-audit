@@ -82,7 +82,7 @@ const report = {
 }
 
 const url = [
-	'http://api.bitbucket.org/2.0/repositories/',
+	'https://api.bitbucket.org/2.0/repositories/',
 	bitbucket.owner,
 	'/',
 	bitbucket.slug,
