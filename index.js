@@ -82,7 +82,7 @@ const report = {
 }
 
 const url = [
-	'https://api.bitbucket.org/2.0/repositories/',
+	'http://api.bitbucket.org/2.0/repositories/',
 	bitbucket.owner,
 	'/',
 	bitbucket.slug,
@@ -92,16 +92,19 @@ const url = [
 	reportId
 ].join('')
 
-const response = spawnSync('curl', [
-	'--proxy', proxyUrl,
+const parameters = [
+	'--proxy', `'${proxyUrl}'`,
 	'--request', 'PUT',
-	`"${url}"`,
+	`'${url}'`,
 	'--header', 'Content-Type: application/json',
 	'--data-raw', `'${JSON.stringify(report)}'`
-])
+]
+
+const response = spawnSync('curl', parameters)
 
 if (response.stderr.toString()) {
-	console.error('Could not push report to Bitbucket.', url, response.stderr.toString())
+	console.error('Could not push report to Bitbucket.', response.stderr.toString())
+	console.error(`curl ${parameters.join(' ')}`)
 	process.exit(1)
 } else {
 	console.log('Report pushed to Bitbucket.')
