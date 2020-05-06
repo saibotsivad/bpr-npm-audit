@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const { spawnSync } = require('child_process')
+const { request } = require('http')
 
 const ORDERED_LEVELS = [
 	'info',
@@ -11,14 +12,21 @@ const ORDERED_LEVELS = [
 ]
 
 const PROXY_TYPES = {
-	local: 'http://localhost:29418',
-	pipe: 'http://host.docker.internal:29418'
+	local: 'localhost',
+	pipe: 'host.docker.internal'
+}
+
+const npmSeverityToBitbucketSeverity = {
+	info: 'LOW',
+	low: 'LOW',
+	moderate: 'MEDIUM',
+	high: 'HIGH',
+	critical: 'CRITICAL'
 }
 
 const bitbucket = {
 	branch: process.env.BITBUCKET_BRANCH,
 	commit: process.env.BITBUCKET_COMMIT,
-	build: process.env.BITBUCKET_BUILD_NUMBER,
 	owner: process.env.BITBUCKET_REPO_OWNER,
 	slug: process.env.BITBUCKET_REPO_SLUG
 }
@@ -29,13 +37,13 @@ if (Object.keys(bitbucket).filter(key => bitbucket[key]).length !== Object.keys(
 
 const reportName = process.env.BPR_NAME || 'Security: npm audit'
 const reportId = process.env.BPR_ID || 'npmaudit'
-const proxyUrl = PROXY_TYPES[process.env.BPR_PROXY || 'local']
+const proxyHost = PROXY_TYPES[process.env.BPR_PROXY || 'local']
 const auditLevel = process.env.BPR_LEVEL || 'high'
 if (!ORDERED_LEVELS.includes(auditLevel)) {
 	console.error('Unsupported audit level.')
 	process.exit(1)
 }
-if (!proxyUrl) {
+if (!proxyHost) {
 	console.error('Unsupported proxy configuration.')
 	process.exit(1)
 }
@@ -54,35 +62,35 @@ const highestLevelIndex = ORDERED_LEVELS.reduce((value, level, index) => {
 		: value
 }, -1)
 
-const report = {
-	title: reportName,
-	details: 'Results of npm audit.',
-	report_type: 'SECURITY',
-	reporter: bitbucket.owner,
-	result: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel)
-		? 'FAILED'
-		: 'PASSED',
-	data: [
-		{
-			title: 'Duration (seconds)',
-			type: 'DURATION',
-			value: Math.round((new Date().getTime() - startTime) / 1000)
-		},
-		{
-			title: 'Dependencies',
-			type: 'NUMBER',
-			value: audit.metadata.dependencies
-		},
-		{
-			title: 'Safe to merge?',
-			type: 'BOOLEAN',
-			value: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel)
-		}
-	]
-}
+const push = (bitbucketUrl, data) => new Promise((resolve, reject) => {
+	const options = {
+		host: proxyHost,
+		port: 29418,
+		path: bitbucketUrl,
+		method: 'PUT',
+		headers: { 'Content-Type': 'application/json' }
+	}
+	const req = request(options, response => {
+		let body = ''
+		response.setEncoding('utf8')
+		response.on('data', chunk => {
+			body += chunk.toString()
+		})
+		response.on('end', () => {
+			if (response.statusCode !== 200) {
+				console.error('Could not push report to Bitbucket.', response.statusCode, body)
+				process.exit(1)
+			} else {
+				resolve()
+			}
+		})
+	})
+	req.write(JSON.stringify(data))
+	req.end()
+})
 
-const url = [
-	'http://api.bitbucket.org/2.0/repositories/',
+const baseUrl = [
+	'https://api.bitbucket.org/2.0/repositories/',
 	bitbucket.owner,
 	'/',
 	bitbucket.slug,
@@ -92,21 +100,50 @@ const url = [
 	reportId
 ].join('')
 
-const parameters = [
-	'--proxy', `'${proxyUrl}'`,
-	'--request', 'PUT',
-	`'${url}'`,
-	'--header', 'Content-Type: application/json',
-	'--data-raw', `'${JSON.stringify(report)}'`
-]
+const pushAllReports = async () => {
+	await push(baseUrl, {
+		title: reportName,
+		details: 'Results of npm audit.',
+		report_type: 'SECURITY',
+		reporter: bitbucket.owner,
+		result: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel)
+			? 'PASSED'
+			: 'FAILED',
+		data: [
+			{
+				title: 'Duration (seconds)',
+				type: 'DURATION',
+				value: Math.round((new Date().getTime() - startTime) / 1000)
+			},
+			{
+				title: 'Dependencies',
+				type: 'NUMBER',
+				value: audit.metadata.dependencies
+			},
+			{
+				title: 'Safe to merge?',
+				type: 'BOOLEAN',
+				value: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel)
+			}
+		]
+	})
 
-const response = spawnSync('curl', parameters)
-
-if (response.stderr.toString()) {
-	console.error('Could not push report to Bitbucket.', response.stderr.toString())
-	console.error(`curl ${parameters.join(' ')}`)
-	process.exit(1)
-} else {
-	console.log('Report pushed to Bitbucket.')
-	process.exit(0)
+	for (const [ id, advisory ] of Object.entries(audit.advisories)) {
+		await push(
+			`${baseUrl}/annotations/${reportId}-${id}`,
+			{
+				annotation_type: 'VULNERABILITY',
+				summary: `${advisory.module_name}: ${advisory.title}`,
+				details: advisory.overview + '\n\n' + advisory.recommendation,
+				link: advisory.url,
+				severity: npmSeverityToBitbucketSeverity[advisory.severity]
+			}
+		)
+	}
 }
+
+pushAllReports()
+	.then(() => {
+		console.log('Report successfully pushed to Bitbucket.')
+		process.exit(0)
+	})
