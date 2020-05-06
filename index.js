@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { spawnSync } = require('child_process')
 
 const ORDERED_LEVELS = [
