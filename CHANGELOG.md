@@ -14,6 +14,12 @@ Change categories are:
 * `Fixed` for any bug fixes.
 * `Security` to invite users to upgrade in case of vulnerabilities.
 
+## [1.1.1] - 2021-03-17
+
+### Fixed
+
+- Drop use of nullish coalescing operator (`??`) to support older versions of Node (only available in Node@14+).
+
 ## [1.1.0] - 2021-03-17
 
 ### Fixed
@@ -25,4 +31,5 @@ Change categories are:
 Initial v1 release, with things working as expected.
 
 [Unreleased]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.0...HEAD
+[1.1.1]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.0.0...v1.1.0

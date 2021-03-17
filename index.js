@@ -118,7 +118,9 @@ const pushAllReports = async () => {
 			{
 				title: 'Dependencies',
 				type: 'NUMBER',
-				value: audit.metadata.dependencies.total ?? audit.metadata.totalDependencies
+				value: audit.metadata.dependencies.total === undefined
+                    ? audit.metadata.totalDependencies
+                    : audit.metadata.dependencies.total
 			},
 			{
 				title: 'Safe to merge?',
