@@ -136,7 +136,7 @@ const pushAllReports = async () => {
 			{
 				annotation_type: 'VULNERABILITY',
 				summary: `${advisory.module_name}: ${advisory.title}`,
-				details: advisory.overview + '\n\n' + advisory.recommendation,
+				details: (advisory.overview + '\n\n' + advisory.recommendation).substring(0, 2000),
 				link: advisory.url,
 				severity: npmSeverityToBitbucketSeverity[advisory.severity]
 			}
