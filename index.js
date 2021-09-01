@@ -3,6 +3,9 @@
 const { spawnSync } = require('child_process')
 const { request } = require('http')
 
+const MAX_DETAILS_LENGTH = 2000
+const TRUNCATION_MESSAGE = '[...]'
+
 const ORDERED_LEVELS = [
 	'info',
 	'low',
@@ -131,12 +134,16 @@ const pushAllReports = async () => {
 	})
 
 	for (const [ id, advisory ] of Object.entries(audit.advisories)) {
+		let details = advisory.overview + '\n\n' + advisory.recommendation
+		if (details.length > MAX_DETAILS_LENGTH) {
+			details = details.substring(0, MAX_DETAILS_LENGTH - TRUNCATION_MESSAGE.length) + TRUNCATION_MESSAGE
+		}
 		await push(
 			`${baseUrl}/annotations/${reportId}-${id}`,
 			{
 				annotation_type: 'VULNERABILITY',
 				summary: `${advisory.module_name}: ${advisory.title}`,
-				details: (advisory.overview + '\n\n' + advisory.recommendation).substring(0, 2000),
+				details,
 				link: advisory.url,
 				severity: npmSeverityToBitbucketSeverity[advisory.severity]
 			}

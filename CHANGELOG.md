@@ -14,6 +14,10 @@ Change categories are:
 * `Fixed` for any bug fixes.
 * `Security` to invite users to upgrade in case of vulnerabilities.
 
+## [1.1.2] - 2021-09-01
+
+- Truncate report details to 2000 chars per Bitbucket maximum character limit. Thanks @TheBrockEllis ❤️
+
 ## [1.1.1] - 2021-03-17
 
 ### Fixed
@@ -31,5 +35,6 @@ Change categories are:
 Initial v1 release, with things working as expected.
 
 [Unreleased]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.0...HEAD
+[1.1.2]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.0.0...v1.1.0
