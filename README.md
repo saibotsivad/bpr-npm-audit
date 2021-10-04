@@ -41,7 +41,7 @@ pipelines:
   my-pipeline:
     - step:
         script:
-          - BPR_NAME="My Report" BPR_ID="myid" BPR_LEVEL="low" npx bpr-npm-audit
+          - BPR_NAME="My Report" BPR_ID="myid" BPR_LEVEL="low" BPR_MAX_BUFFER_SIZE="20971520" npx bpr-npm-audit
 ```
 
 ### proxy
@@ -73,6 +73,15 @@ Configure by setting the environment variable `BRP_LEVEL` to one of these option
 * `critical`
 
 If there are any vulnerabilities at that level or higher, the report will be marked as failed.
+
+### max buffer size
+
+Configure by setting the environment variable `BPR_MAX_BUFFER_SIZE` to desired value in bytes.
+
+Default: `10485760` (10 MB)
+
+The value shouldn't be changed unless you run into problems with `npm audit` output being too large to handle
+(usually signalled by `Unexpected end of JSON input` error).
 
 ## license
 
