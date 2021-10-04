@@ -42,7 +42,7 @@ const reportName = process.env.BPR_NAME || 'Security: npm audit'
 const reportId = process.env.BPR_ID || 'npmaudit'
 const proxyHost = PROXY_TYPES[process.env.BPR_PROXY || 'local']
 const auditLevel = process.env.BPR_LEVEL || 'high'
-const maxAuditOutputBufferSize = Number(process.env.BPR_MAX_BUFFER_SIZE) || 1024 * 1024 * 10
+const maxAuditOutputBufferSize = parseInt(process.env.BPR_MAX_BUFFER_SIZE, 10) || 1024 * 1024 * 10
 if (!ORDERED_LEVELS.includes(auditLevel)) {
 	console.error('Unsupported audit level.')
 	process.exit(1)
