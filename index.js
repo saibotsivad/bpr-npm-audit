@@ -42,6 +42,7 @@ const reportName = process.env.BPR_NAME || 'Security: npm audit'
 const reportId = process.env.BPR_ID || 'npmaudit'
 const proxyHost = PROXY_TYPES[process.env.BPR_PROXY || 'local']
 const auditLevel = process.env.BPR_LEVEL || 'high'
+const maxAuditOutputBufferSize = Number(process.env.BPR_MAX_BUFFER_SIZE) || 1024 * 1024 * 10
 if (!ORDERED_LEVELS.includes(auditLevel)) {
 	console.error('Unsupported audit level.')
 	process.exit(1)
@@ -52,7 +53,9 @@ if (!proxyHost) {
 }
 
 const startTime = new Date().getTime()
-const { stderr, stdout } = spawnSync('npm', [ 'audit', '--json' ])
+const { stderr, stdout } = spawnSync('npm', [ 'audit', '--json' ], {
+	maxBuffer: maxAuditOutputBufferSize
+})
 if (stderr.toString()) {
 	console.error('Could not execute the `npm audit` command.', stderr.toString())
 	process.exit(1)
