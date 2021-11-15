@@ -11,12 +11,12 @@ const ORDERED_LEVELS = [
 	'low',
 	'moderate',
 	'high',
-	'critical'
+	'critical',
 ]
 
 const PROXY_TYPES = {
 	local: 'localhost',
-	pipe: 'host.docker.internal'
+	pipe: 'host.docker.internal',
 }
 
 const npmSeverityToBitbucketSeverity = {
@@ -24,14 +24,14 @@ const npmSeverityToBitbucketSeverity = {
 	low: 'LOW',
 	moderate: 'MEDIUM',
 	high: 'HIGH',
-	critical: 'CRITICAL'
+	critical: 'CRITICAL',
 }
 
 const bitbucket = {
 	branch: process.env.BITBUCKET_BRANCH,
 	commit: process.env.BITBUCKET_COMMIT,
 	owner: process.env.BITBUCKET_REPO_OWNER,
-	slug: process.env.BITBUCKET_REPO_SLUG
+	slug: process.env.BITBUCKET_REPO_SLUG,
 }
 if (Object.keys(bitbucket).filter(key => bitbucket[key]).length !== Object.keys(bitbucket).length) {
 	console.error('Not all Bitbucket environment variables were set.')
@@ -54,7 +54,7 @@ if (!proxyHost) {
 
 const startTime = new Date().getTime()
 const { stderr, stdout } = spawnSync('npm', [ 'audit', '--json' ], {
-	maxBuffer: maxAuditOutputBufferSize
+	maxBuffer: maxAuditOutputBufferSize,
 })
 if (stderr.toString()) {
 	console.error('Could not execute the `npm audit` command.', stderr.toString())
@@ -68,13 +68,13 @@ const highestLevelIndex = ORDERED_LEVELS.reduce((value, level, index) => {
 		: value
 }, -1)
 
-const push = (bitbucketUrl, data) => new Promise((resolve, reject) => {
+const push = (bitbucketUrl, data) => new Promise(resolve => {
 	const options = {
 		host: proxyHost,
 		port: 29418,
 		path: bitbucketUrl,
 		method: 'PUT',
-		headers: { 'Content-Type': 'application/json' }
+		headers: { 'Content-Type': 'application/json' },
 	}
 	const req = request(options, response => {
 		let body = ''
@@ -103,7 +103,7 @@ const baseUrl = [
 	'/commit/',
 	bitbucket.commit,
 	'/reports/',
-	reportId
+	reportId,
 ].join('')
 
 const pushAllReports = async () => {
@@ -119,38 +119,79 @@ const pushAllReports = async () => {
 			{
 				title: 'Duration (seconds)',
 				type: 'DURATION',
-				value: Math.round((new Date().getTime() - startTime) / 1000)
+				value: Math.round((new Date().getTime() - startTime) / 1000),
 			},
 			{
 				title: 'Dependencies',
 				type: 'NUMBER',
 				value: audit.metadata.dependencies.total === undefined
-                    ? audit.metadata.totalDependencies
-                    : audit.metadata.dependencies.total
+					? audit.metadata.totalDependencies
+					: audit.metadata.dependencies.total,
 			},
 			{
 				title: 'Safe to merge?',
 				type: 'BOOLEAN',
-				value: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel)
-			}
-		]
+				value: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel),
+			},
+		],
 	})
 
-	for (const [ id, advisory ] of Object.entries(audit.advisories)) {
-		let details = advisory.overview + '\n\n' + advisory.recommendation
-		if (details.length > MAX_DETAILS_LENGTH) {
-			details = details.substring(0, MAX_DETAILS_LENGTH - TRUNCATION_MESSAGE.length) + TRUNCATION_MESSAGE
-		}
-		await push(
-			`${baseUrl}/annotations/${reportId}-${id}`,
-			{
-				annotation_type: 'VULNERABILITY',
-				summary: `${advisory.module_name}: ${advisory.title}`,
-				details,
-				link: advisory.url,
-				severity: npmSeverityToBitbucketSeverity[advisory.severity]
+	// npm audit output had a major change here: https://github.com/npm/cli/blob/latest/changelogs/CHANGELOG-7.md#npm-audit
+	// I'll still support the old version for now
+	if (audit.advisories) {
+		for (const [ id, advisory ] of Object.entries(audit.advisories)) {
+			let details = advisory.overview + '\n\n' + advisory.recommendation
+			if (details.length > MAX_DETAILS_LENGTH) {
+				details = details.substring(0, MAX_DETAILS_LENGTH - TRUNCATION_MESSAGE.length) + TRUNCATION_MESSAGE
 			}
-		)
+			await push(
+				`${baseUrl}/annotations/${reportId}-${id}`,
+				{
+					annotation_type: 'VULNERABILITY',
+					summary: `${advisory.module_name}: ${advisory.title}`,
+					details,
+					link: advisory.url,
+					severity: npmSeverityToBitbucketSeverity[advisory.severity],
+				},
+			)
+		}
+	} else if (audit.vulnerabilities) {
+		for (const [ id, { via, effects, fixAvailable } ] of Object.entries(audit.vulnerabilities)) {
+
+			// These are libs that are effected by a different vulnerability, so we ignore them here.
+			if (via && via.length && via.every(v => typeof v === 'string')) continue
+
+			for (const { name, title, url, severity, range } of via) {
+				let details = [
+					'`' + name + '` @ ' + range,
+					'Severity: ' + severity,
+					'[' + title + '](' + url + ')',
+				].join('\n')
+				if (fixAvailable) {
+					details += 'Fix is available via `npm audit fix`.'
+				}
+				if (effects && effects.length) {
+					details += '\nThese libraries are effected:'
+					for (const effectedLibName of effects) {
+						const effectedRange = audit.vulnerabilities[effectedLibName] && audit.vulnerabilities[effectedLibName].range
+						details += '\n- `' + effectedLibName + '` @ ' + (effectedRange || 'Undetermined Range')
+					}
+				}
+				if (details.length > MAX_DETAILS_LENGTH) {
+					details = details.substring(0, MAX_DETAILS_LENGTH - TRUNCATION_MESSAGE.length) + TRUNCATION_MESSAGE
+				}
+				await push(
+					`${baseUrl}/annotations/${reportId}-${id}`,
+					{
+						annotation_type: 'VULNERABILITY',
+						summary: `${name}: ${title}`,
+						details,
+						link: url,
+						severity: npmSeverityToBitbucketSeverity[severity],
+					},
+				)
+			}
+		}
 	}
 }
 
