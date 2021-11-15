@@ -172,17 +172,17 @@ const pushAllReports = async () => {
 
 			for (const { name, title, url, severity, range } of via) {
 				// These are artifacts that I don't understand...
-				if (!name) continue
+				if (!name || name === 'undefined') continue
 				// Possibly ignore lower severity
 				if (!shouldAddAnnotation(severity)) continue
 
-				let details = `${name} (${range}) is a ${severity} rated issue "${title}" `
+				let details = `${name} (${range}) is a ${severity} rated issue "${title}"`
 				if (effects && effects.length) {
-					details += 'which effects ' + effects
+					details += ' which effects ' + effects
 						.map(name => `${name} (${audit.vulnerabilities[name] && audit.vulnerabilities[name].range || '*'})`)
 						.join(', ')
 				}
-				details += '. For more information: ${url}'
+				details += '. For more information: ' + url
 				if (details.length > MAX_DETAILS_LENGTH) {
 					details = details.substring(0, MAX_DETAILS_LENGTH - TRUNCATION_MESSAGE.length) + TRUNCATION_MESSAGE
 				}
