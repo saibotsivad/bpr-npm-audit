@@ -65,7 +65,7 @@ Default: `npmaudit`
 
 ### Fail Condition
 
-Configure by setting the environment variable `BRP_LEVEL` to one of these options.
+Configure by setting the environment variable `BRP_LEVEL` to one of these options:
 
 * `low`
 * `moderate`
@@ -73,6 +73,14 @@ Configure by setting the environment variable `BRP_LEVEL` to one of these option
 * `critical`
 
 If there are any vulnerabilities at that level or higher, the report will be marked as failed.
+
+### Reporting Level
+
+Configure by setting the environment `BRP_LOG` to any of the `BRP_LEVEL` values.
+
+If this is not set, all audit log entries will be included in the Pipeline Report.
+
+Setting this property will limit the Report to contain only audit log entries at this level or higher.
 
 ### Max Buffer Size
 

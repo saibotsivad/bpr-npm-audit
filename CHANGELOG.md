@@ -14,11 +14,12 @@ Change categories are:
 * `Fixed` for any bug fixes.
 * `Security` to invite users to upgrade in case of vulnerabilities.
 
-## [1.3.0] - 2021-11-15
+## [1.3.0-1.4.0] - 2021-11-15
 
 ### Added
 
 - Support for [npm@7's new audit output](https://github.com/npm/cli/blob/latest/changelogs/CHANGELOG-7.md#npm-audit).
+- The flag `BPR_LOG` to limit what level of audit entries get added to the report.
 
 ## [1.2.0] - 2021-09-04
 
@@ -49,7 +50,7 @@ Change categories are:
 Initial v1 release, with things working as expected.
 
 [Unreleased]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.0...HEAD
-[1.3.0]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.2.0...v1.3.0
+[1.3.0-1.4.0]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.2.0...v1.4.0
 [1.2.0]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.1...v1.2.0
 [1.1.2]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.0...v1.1.1

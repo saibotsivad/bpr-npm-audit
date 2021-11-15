@@ -42,6 +42,7 @@ const reportName = process.env.BPR_NAME || 'Security: npm audit'
 const reportId = process.env.BPR_ID || 'npmaudit'
 const proxyHost = PROXY_TYPES[process.env.BPR_PROXY || 'local']
 const auditLevel = process.env.BPR_LEVEL || 'high'
+const auditAnnotationLevel = process.env.BRP_LOG
 const maxAuditOutputBufferSize = parseInt(process.env.BPR_MAX_BUFFER_SIZE, 10) || 1024 * 1024 * 10
 if (!ORDERED_LEVELS.includes(auditLevel)) {
 	console.error('Unsupported audit level.')
@@ -67,6 +68,11 @@ const highestLevelIndex = ORDERED_LEVELS.reduce((value, level, index) => {
 		? index
 		: value
 }, -1)
+
+const shouldAddAnnotation = severity => {
+	if (!auditAnnotationLevel) return true
+	return ORDERED_LEVELS.indexOf(severity) >= ORDERED_LEVELS.indexOf(auditAnnotationLevel)
+}
 
 const push = (bitbucketUrl, data) => new Promise(resolve => {
 	const options = {
@@ -140,46 +146,51 @@ const pushAllReports = async () => {
 	// I'll still support the old version for now
 	if (audit.advisories) {
 		for (const [ id, advisory ] of Object.entries(audit.advisories)) {
-			let details = advisory.overview + '\n\n' + advisory.recommendation
-			if (details.length > MAX_DETAILS_LENGTH) {
-				details = details.substring(0, MAX_DETAILS_LENGTH - TRUNCATION_MESSAGE.length) + TRUNCATION_MESSAGE
+			if (shouldAddAnnotation(advisory.severity)) {
+				let details = advisory.overview + '\n\n' + advisory.recommendation
+				if (details.length > MAX_DETAILS_LENGTH) {
+					details = details.substring(0, MAX_DETAILS_LENGTH - TRUNCATION_MESSAGE.length) + TRUNCATION_MESSAGE
+				}
+				await push(
+					`${baseUrl}/annotations/${reportId}-${id}`,
+					{
+						annotation_type: 'VULNERABILITY',
+						summary: `${advisory.module_name}: ${advisory.title}`,
+						details,
+						link: advisory.url,
+						severity: npmSeverityToBitbucketSeverity[advisory.severity],
+					},
+				)
 			}
-			await push(
-				`${baseUrl}/annotations/${reportId}-${id}`,
-				{
-					annotation_type: 'VULNERABILITY',
-					summary: `${advisory.module_name}: ${advisory.title}`,
-					details,
-					link: advisory.url,
-					severity: npmSeverityToBitbucketSeverity[advisory.severity],
-				},
-			)
 		}
 	} else if (audit.vulnerabilities) {
-		for (const [ id, { via, effects, fixAvailable } ] of Object.entries(audit.vulnerabilities)) {
+		let annotationCount = 0
+		for (const [ id, { via, effects } ] of Object.entries(audit.vulnerabilities)) {
 
 			// These are libs that are effected by a different vulnerability, so we ignore them here.
 			if (via && via.length && via.every(v => typeof v === 'string')) continue
 
 			for (const { name, title, url, severity, range } of via) {
-				let details = [
-					'`' + name + '` @ ' + range,
-					'Severity: ' + severity,
-					'[' + title + '](' + url + ')',
-				].join('\n')
-				if (fixAvailable) {
-					details += 'Fix is available via `npm audit fix`.'
-				}
+				// These are artifacts that I don't understand...
+				if (!name) continue
+				// Possibly ignore lower severity
+				if (!shouldAddAnnotation(severity)) continue
+
+				let details = `${name} (${range}) is a ${severity} rated issue "${title}" `
 				if (effects && effects.length) {
-					details += '\nThese libraries are effected:'
-					for (const effectedLibName of effects) {
-						const effectedRange = audit.vulnerabilities[effectedLibName] && audit.vulnerabilities[effectedLibName].range
-						details += '\n- `' + effectedLibName + '` @ ' + (effectedRange || 'Undetermined Range')
-					}
+					details += 'which effects ' + effects
+						.map(name => `${name} (${audit.vulnerabilities[name] && audit.vulnerabilities[name].range || '*'})`)
+						.join(', ')
 				}
+				details += '. For more information: ${url}'
 				if (details.length > MAX_DETAILS_LENGTH) {
 					details = details.substring(0, MAX_DETAILS_LENGTH - TRUNCATION_MESSAGE.length) + TRUNCATION_MESSAGE
 				}
+				// From the Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Bworkspace%7D/%7Brepo_slug%7D/commit/%7Bcommit%7D/reports/%7BreportId%7D/annotations/%7BannotationId%7D#put
+				// "a report can contain up to 1000 annotations"
+				// If we get to that many, we'll just quit early.
+				annotationCount++
+				if (annotationCount >= 1000) continue
 				await push(
 					`${baseUrl}/annotations/${reportId}-${id}`,
 					{
