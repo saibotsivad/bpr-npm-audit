@@ -10,10 +10,17 @@
   "keywords": [
     "bitbucket",
     "pipelines",
-    "report"
+    "report",
+    "npm",
+    "audit",
+    "security"
   ],
-  "author": "saibotsivad",
-  "license": "VOL",
+  "author": {
+    "name": "Tobias Davis",
+    "email": "tobias@davistobias.com",
+    "url": "https://davistobias.com"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
   "bugs": {
     "url": "https://github.com/saibotsivad/bpr-npm-audit/issues"
   },

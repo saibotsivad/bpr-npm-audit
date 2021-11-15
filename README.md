@@ -16,7 +16,7 @@ Have a look at this [example pull request](https://bitbucket.org/saibotsivad/tes
 
 ![Example report image](./example-report.png)
 
-## security
+## Security
 
 This module has zero dependencies (outside of NodeJS), and is simple enough to audit yourself.
 
@@ -32,7 +32,7 @@ pipelines:
 
 (Where `username` is your Github username.)
 
-## configure
+## Configure
 
 Parameters are passed in as environment variables. For example:
 
@@ -48,22 +48,22 @@ pipelines:
 
 Configure by setting the environment variable `BPR_PROXY` to one of these options.
 
-* `local` - (default) used in normal Pipelines
-* `pipe` - used in custom pipes
+* `local` - (default) Used in normal Pipelines.
+* `pipe` - Used in custom pipes.
 
-### report name
+### Report Name
 
 Configure by setting the environment variable `BPR_NAME`.
 
 Default: `Security: npm audit`
 
-### report id
+### Report ID
 
 Configure by setting the environment variable `BPR_ID`.
 
 Default: `npmaudit`
 
-### fail condition
+### Fail Condition
 
 Configure by setting the environment variable `BRP_LEVEL` to one of these options.
 
@@ -74,7 +74,7 @@ Configure by setting the environment variable `BRP_LEVEL` to one of these option
 
 If there are any vulnerabilities at that level or higher, the report will be marked as failed.
 
-### max buffer size
+### Max Buffer Size
 
 Configure by setting the environment variable `BPR_MAX_BUFFER_SIZE` to desired value in bytes.
 
@@ -83,7 +83,7 @@ Default: `10485760` (10 MB)
 The value shouldn't be changed unless you run into problems with `npm audit` output being too large to handle
 (usually signalled by `Unexpected end of JSON input` error).
 
-## license
+## License
 
 This project is published and released under the [Very Open License](http://veryopenlicense.com).
 
