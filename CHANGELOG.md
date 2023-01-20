@@ -14,7 +14,13 @@ Change categories are:
 * `Fixed` for any bug fixes.
 * `Security` to invite users to upgrade in case of vulnerabilities.
 
-## [1.3.0-1.4.2] - 2023-01-20
+## [1.4.2] - 2023-01-20
+
+### Fix
+
+- Bitbucket API does not support `/` characters in the annotation `id` property, so they'll be replaced with `-` thanks to @lukipro 💪
+
+## [1.3.0-1.4.1] - 2021-11-15
 
 ### Added
 
@@ -51,7 +57,8 @@ Change categories are:
 Initial v1 release, with things working as expected.
 
 [Unreleased]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.0...HEAD
-[1.3.0-1.4.2]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.2.0...v1.4.2
+[1.4.2]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.4.1...v1.4.2
+[1.3.0-1.4.1]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.2.0...v1.4.1
 [1.2.0]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.1...v1.2.0
 [1.1.2]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/saibotsivad/bpr-npm-audit/compare/v1.1.0...v1.1.1
