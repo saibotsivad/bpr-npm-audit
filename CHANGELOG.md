@@ -26,7 +26,6 @@ Change categories are:
 
 - Support for [npm@7's new audit output](https://github.com/npm/cli/blob/latest/changelogs/CHANGELOG-7.md#npm-audit).
 - The flag `BPR_LOG` to limit what level of audit entries get added to the report.
-- Fixed error when pushing annotations which contain a `/` in the `id`
 
 ## [1.2.0] - 2021-09-04
 
