@@ -1,0 +1,28 @@
+{
+  "name": "bpr-npm-audit",
+  "version": "1.4.1",
+  "description": "Bitbucket Pipelines report for \"npm audit\".",
+  "bin": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saibotsivad/bpr-npm-audit.git"
+  },
+  "keywords": [
+    "bitbucket",
+    "pipelines",
+    "report",
+    "npm",
+    "audit",
+    "security"
+  ],
+  "author": {
+    "name": "Tobias Davis",
+    "email": "tobias@davistobias.com",
+    "url": "https://davistobias.com"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/saibotsivad/bpr-npm-audit/issues"
+  },
+  "homepage": "https://github.com/saibotsivad/bpr-npm-audit#readme"
+}
