@@ -152,7 +152,7 @@ const pushAllReports = async () => {
 					details = details.substring(0, MAX_DETAILS_LENGTH - TRUNCATION_MESSAGE.length) + TRUNCATION_MESSAGE
 				}
 				await push(
-					`${baseUrl}/annotations/${reportId}-${id}`,
+					`${baseUrl}/annotations/${reportId}-${id.replace('/', '-')}`,
 					{
 						annotation_type: 'VULNERABILITY',
 						summary: `${advisory.module_name}: ${advisory.title}`,
@@ -192,7 +192,7 @@ const pushAllReports = async () => {
 				annotationCount++
 				if (annotationCount >= 1000) continue
 				await push(
-					`${baseUrl}/annotations/${reportId}-${id}`,
+					`${baseUrl}/annotations/${reportId}-${id.replace('/', '-')}`,
 					{
 						annotation_type: 'VULNERABILITY',
 						summary: `${name}: ${title}`,
