@@ -14,6 +14,12 @@ Change categories are:
 * `Fixed` for any bug fixes.
 * `Security` to invite users to upgrade in case of vulnerabilities.
 
+## [1.4.3] - 2023-02-03
+
+### Fix
+
+- Some environment variables were mislabeled in the docs, and the `BPR_LOG` variable was incorrectly spelled `BRP_LOG` 🤦‍♂️
+
 ## [1.4.2] - 2023-01-20
 
 ### Fix
