@@ -15,7 +15,7 @@ const ORDERED_LEVELS = [
 ]
 
 const PROXY_TYPES = {
-	local: 'localhost',
+	local: '127.0.0.1',
 	pipe: 'host.docker.internal',
 }
 
@@ -40,7 +40,7 @@ if (Object.keys(bitbucket).filter(key => bitbucket[key]).length !== Object.keys(
 
 const reportName = process.env.BPR_NAME || 'Security: npm audit'
 const reportId = process.env.BPR_ID || 'npmaudit'
-const proxyHost = PROXY_TYPES[process.env.BPR_PROXY || 'local']
+const proxyHost = PROXY_TYPES[process.env.BPR_PROXY] || PROXY_TYPES.local
 const auditLevel = process.env.BPR_LEVEL || 'high'
 const auditAnnotationLevel = process.env.BPR_LOG
 const maxAuditOutputBufferSize = parseInt(process.env.BPR_MAX_BUFFER_SIZE, 10) || 1024 * 1024 * 10

@@ -19,6 +19,7 @@ Change categories are:
 ### Fix
 
 - Some environment variables were mislabeled in the docs, and the `BPR_LOG` variable was incorrectly spelled `BRP_LOG` 🤦‍♂️
+- NodeJS 17 introduced a breaking change with DNS lookup ([discussion here](https://github.com/nodejs/node/issues/40702)) that required changing `localhost` to `127.0.0.1` (a backwards compatible change) thanks to @Conduitry and @TehShrike for knowing about the problem and @thaithcock for reporting 🎉
 
 ## [1.4.2] - 2023-01-20
 
