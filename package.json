@@ -1,6 +1,6 @@
 {
   "name": "bpr-npm-audit",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Bitbucket Pipelines report for \"npm audit\".",
   "bin": "index.js",
   "repository": {
