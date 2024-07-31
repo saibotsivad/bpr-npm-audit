@@ -61,7 +61,13 @@ if (stderr.toString()) {
 	console.error('Could not execute the `npm audit` command.', stderr.toString())
 	process.exit(1)
 }
-const audit = JSON.parse(stdout.toString())
+let audit = stdout.toString()
+try {
+	audit = JSON.parse(audit)
+} catch (error) {
+	console.error('Error while parsing `npm audit` output:\n\n' + audit + '\n\n', error)
+	process.exit(1)
+}
 
 const highestLevelIndex = ORDERED_LEVELS.reduce((value, level, index) => {
 	return audit.metadata.vulnerabilities[level]

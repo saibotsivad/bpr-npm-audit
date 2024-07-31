@@ -14,7 +14,13 @@ Change categories are:
 * `Fixed` for any bug fixes.
 * `Security` to invite users to upgrade in case of vulnerabilities.
 
-## [1.4.3] - 2023-02-03
+## [1.4.4](https://github.com/saibotsivad/bpr-npm-audit/compare/v1.4.3...v1.4.4) - 2024-07-31
+
+### Fix
+
+- If the output of `npm audit --json` is not parseable as JSON, the `npm` string will print out and exit with `0`.
+
+## [1.4.3](https://github.com/saibotsivad/bpr-npm-audit/compare/v1.4.2...v1.4.3) - 2023-02-03
 
 ### Fix
 
