@@ -24,7 +24,7 @@ const npmSeverityToBitbucketSeverity = {
 	low: 'LOW',
 	moderate: 'MEDIUM',
 	high: 'HIGH',
-	critical: 'CRITICAL',
+	critical: 'HIGH',
 }
 
 const bitbucket = {
@@ -125,8 +125,8 @@ const pushAllReports = async () => {
 		report_type: 'SECURITY',
 		reporter: bitbucket.owner,
 		result: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel)
-			? 'PASSED'
-			: 'FAILED',
+			? 'PASS'
+			: 'FAIL',
 		data: [
 			{
 				title: 'Duration (seconds)',
