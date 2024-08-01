@@ -124,7 +124,7 @@ const pushAllReports = async () => {
 		details: 'Results of npm audit.',
 		report_type: 'SECURITY',
 		reporter: bitbucket.owner,
-		result: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel)
+		result: highestLevelIndex < ORDERED_LEVELS.indexOf(auditLevel)
 			? 'PASSED'
 			: 'FAILED',
 		data: [
@@ -143,7 +143,7 @@ const pushAllReports = async () => {
 			{
 				title: 'Safe to merge?',
 				type: 'BOOLEAN',
-				value: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel),
+				value: highestLevelIndex < ORDERED_LEVELS.indexOf(auditLevel),
 			},
 		],
 	})
@@ -215,5 +215,9 @@ const pushAllReports = async () => {
 pushAllReports()
 	.then(() => {
 		console.log('Report successfully pushed to Bitbucket.')
-		process.exit(0)
+		if (highestLevelIndex < ORDERED_LEVELS.indexOf(auditLevel)) {
+			process.exit(0)
+		} else {
+			process.exit(1)
+		}
 	})
