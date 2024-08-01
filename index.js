@@ -68,7 +68,7 @@ try {
 	console.error('Error while parsing `npm audit` output:\n\n' + audit + '\n\n', error)
 	process.exit(1)
 }
-
+console.log(audit);
 const highestLevelIndex = ORDERED_LEVELS.reduce((value, level, index) => {
 	return audit.metadata.vulnerabilities[level]
 		? index
