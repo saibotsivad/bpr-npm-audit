@@ -133,7 +133,7 @@ const pushAllReports = async () => {
 		details: 'Results of npm audit.',
 		report_type: 'SECURITY',
 		reporter: bitbucket.owner,
-		result: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel)
+		result: highestLevelIndex < ORDERED_LEVELS.indexOf(auditLevel)
 			? 'PASSED'
 			: 'FAILED',
 		data: [
