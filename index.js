@@ -24,7 +24,7 @@ const npmSeverityToBitbucketSeverity = {
 	low: 'LOW',
 	moderate: 'MEDIUM',
 	high: 'HIGH',
-	critical: 'CRITICAL',
+	critical: 'HIGH',
 }
 
 const bitbucket = {
@@ -56,8 +56,6 @@ if (!proxyHost) {
 const startTime = new Date().getTime()
 const { stderr, stdout } = spawnSync('npm', [ 'audit', '--json' ], {
 	maxBuffer: maxAuditOutputBufferSize,
-	shell: true,
-    encoding: "utf-8",
 })
 if (stderr.toString()) {
 	console.error('Could not execute the `npm audit` command.', stderr.toString())
@@ -127,8 +125,8 @@ const pushAllReports = async () => {
 		report_type: 'SECURITY',
 		reporter: bitbucket.owner,
 		result: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel)
-			? 'PASSED'
-			: 'FAILED',
+			? 'PASS'
+			: 'FAIL',
 		data: [
 			{
 				title: 'Duration (seconds)',
