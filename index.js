@@ -126,6 +126,8 @@ const baseUrl = [
 ].join('')
 
 const pushAllReports = async () => {
+	console.log(`highestLevelIndex: ${highestLevelIndex}`);
+	console.log(`ORDERED_LEVELS: ${ORDERED_LEVELS.indexOf(auditLevel)}`);
 	await push(baseUrl, {
 		title: reportName,
 		details: 'Results of npm audit.',
