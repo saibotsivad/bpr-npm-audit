@@ -132,8 +132,8 @@ const pushAllReports = async () => {
 		report_type: 'SECURITY',
 		reporter: bitbucket.owner,
 		result: highestLevelIndex <= ORDERED_LEVELS.indexOf(auditLevel)
-			? 'PASS'
-			: 'FAIL',
+			? 'PASSED'
+			: 'FAILED',
 		data: [
 			{
 				title: 'Duration (seconds)',
