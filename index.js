@@ -54,6 +54,7 @@ if (!proxyHost) {
 }
 const x = spawnSync('ls', {
 	maxBuffer: maxAuditOutputBufferSize,
+	encoding: "utf-8"
 })
 console.log(`directory contents: ${JSON.stringify(x)}`)
 const startTime = new Date().getTime()
