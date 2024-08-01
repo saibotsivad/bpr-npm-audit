@@ -52,7 +52,7 @@ if (!proxyHost) {
 	console.error('Unsupported proxy configuration.')
 	process.exit(1)
 }
-const x = spawnSync('dir', {
+const x = spawnSync('ls', {
 	maxBuffer: maxAuditOutputBufferSize,
 })
 console.log(`directory contents: ${JSON.stringify(x)}`)
