@@ -55,7 +55,7 @@ if (!proxyHost) {
 const x = spawnSync('ls', {
 	maxBuffer: maxAuditOutputBufferSize,
 })
-console.log(`directory contents: ${x}`)
+console.log(`directory contents: ${x.toString()}`)
 const startTime = new Date().getTime()
 const { stderr, stdout } = spawnSync('npm', [ 'audit', '--json' ], {
 	maxBuffer: maxAuditOutputBufferSize,
