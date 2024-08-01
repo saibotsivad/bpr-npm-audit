@@ -88,6 +88,9 @@ const push = (bitbucketUrl, data) => new Promise(resolve => {
 		method: 'PUT',
 		headers: { 'Content-Type': 'application/json' },
 	}
+
+	console.log(`options: ${JSON.stringify(options)}`);
+
 	const req = request(options, response => {
 		let body = ''
 		response.setEncoding('utf8')
